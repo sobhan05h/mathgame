@@ -46,11 +46,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install "buildozer>=1.5.0" "cython<3.0.0"
 
-      - name: Build APK with Buildozer
-        env:
-          ACCEPT_SDK_LICENSE: "1"
+      - name: Setup Android SDK manually & Accept Licenses
         run: |
-          buildozer --profile auto_accept android debug || buildozer android debug
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33" "platform-tools"
+
+      - name: Build APK with Buildozer
+        run: |
+          buildozer -v android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
